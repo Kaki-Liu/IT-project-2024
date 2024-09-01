@@ -1,0 +1,145 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+header {
+  background-color: #fff;
+  padding: 10px 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  background-color: #FFA07A;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #ff7f50;
+}
+
+.timetable-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.student-list,
+.week-timetable {
+  background-color: #fff;
+  padding: 20px;
+  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.student-list h2,
+.week-timetable h2 {
+  margin-bottom: 10px;
+}
+
+.student-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.student-list li {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+table {
+  width: 120%;
+  border-collapse: collapse;
+}
+
+thead th,
+tbody th {
+  background-color: #f8f8f8;
+  padding: 30px;
+  text-align: center;
+}
+
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+
+.course {
+  background-color: #FFA07A;
+  color: black;
+  padding: 10px;
+}
+
+.building {
+  display: block;
+  color: #333;
+  font-size: 0.8em;
+}
+
+.building-list,
+.chat-box {
+  background-color: #FFF;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.building-list h2,
+.chat-box h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.building-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.building-list li {
+  background-color: #FFA07A;
+  color: white;
+  padding: 10px;
+  margin-bottom: 5px;
+  /* Creates space between items */
+}
+
+.building-list li:last-child {
+  margin-bottom: 0;
+  /* Removes margin from the last item */
+}
+
+.chat-box textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.chat-box button {
+  width: 100%;
+  padding: 10px 0;
+  background-color: #FFA07A;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.chat-box button:hover {
+  background-color: #ff7f50;
+}
