@@ -1,0 +1,119 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "name": "Math",
+      "teacherId": 1,
+      "weeklyHours": 4,
+      "roomType": "classroom"
+    },
+    {
+      "id": 2,
+      "name": "English",
+      "teacherId": 2,
+      "weeklyHours": 3,
+      "roomType": "classroom"
+    },
+    {
+      "id": 3,
+      "name": "Physics",
+      "teacherId": 3,
+      "weeklyHours": 5,
+      "roomType": "lab"
+    }
+  ],
+  "classrooms": [
+    {
+      "id": 1,
+      "name": "A-101",
+      "capacity": 7,
+      "opentime": 8,
+      "closetime": 21,
+      "openday": [1, 2, 3, 4, 5],
+      "type": "classroom"
+    },
+    {
+      "id": 2,
+      "name": "B-205",
+      "capacity": 7,
+      "opentime": 8,
+      "closetime": 12,
+      "openday": [1, 2, 3, 4, 5],
+      "type": "classroom"
+    },
+    {
+      "id": 3,
+      "name": "Lab-01",
+      "capacity": 20,
+      "opentime": 13,
+      "closetime": 21,
+      "openday": [1, 2, 3, 4, 5],
+      "type": "lab"
+    },
+    {
+      "id": 4,
+      "name": "A-102",
+      "capacity": 2,
+      "opentime": 8,
+      "closetime": 21,
+      "openday": [1, 3, 5],
+      "type": "classroom"
+    }
+  ],
+  "students": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "courseIds": [1, 2]
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "courseIds": [1, 3]
+    },
+    {
+      "id": 3,
+      "name": "Charlie",
+      "courseIds": [2, 3]
+    },
+    {
+      "id": 4,
+      "name": "Asw",
+      "courseIds": [1, 2, 3]
+    },
+    {
+      "id": 5,
+      "name": "Efs",
+      "courseIds": [2, 3]
+    },
+    {
+      "id": 6,
+      "name": "Zsds",
+      "courseIds": [1, 2, 3]
+    },
+    {
+      "id": 7,
+      "name": "Jrsds",
+      "courseIds": [1, 2, 3]
+    },
+    {
+      "id": 8,
+      "name": "Ursdf",
+      "courseIds": [1, 2, 3]
+    }
+  ],
+  "teachers": [
+    {
+      "id": 1,
+      "name": "Mr. Smith"
+    },
+    {
+      "id": 2,
+      "name": "Ms. Johnson"
+    },
+    {
+      "id": 3,
+      "name": "Dr. Williams"
+    }
+  ]
+}
