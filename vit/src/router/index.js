@@ -6,6 +6,7 @@ import LoginPage from '@/views/LoginPage.vue';
 import ClassroomManagement from '@/views/ClassroomManagement.vue';
 import CourseManagement from '@/views/CourseManagement.vue';
 import AdminTimetable from '@/views/AdminTimetable.vue';
+import GenerateTimetable from '@/views/GenerateTimetable.vue';
 
 const routes = [
   {
@@ -37,7 +38,13 @@ const routes = [
     path: '/admin-timetable',
     name: 'AdminTimetable',
     component: AdminTimetable
-  }
+  },
+  {
+    path: '/schedule-management',
+    name: 'GenerateTimetable',
+    component: GenerateTimetable
+  },
+ 
 ];
 
 const router = createRouter({

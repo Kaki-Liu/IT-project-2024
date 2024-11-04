@@ -10,15 +10,15 @@
         <button @click="logout">Logout</button>
       </div>
     </header>
-    
+
     <div class="classroom-container">
       <h2>Classroom Management</h2>
-      
+
       <div class="campus-selection">
         <h3>Select Campus</h3>
         <ul>
-          <li 
-            v-for="campus in campuses" 
+          <li
+            v-for="campus in campuses"
             :key="campus.id"
             @click="selectCampus(campus.id)"
             :class="{ active: selectedCampusId === campus.id }"
@@ -28,43 +28,41 @@
         </ul>
       </div>
 
-      <form v-if="selectedCampusId" @submit.prevent="addClassroom" class="classroom-form">
-        <input v-model="newClassroom.name" type="text" placeholder="Classroom/Lab Name" required />
-        <input v-model="newClassroom.type" type="number" placeholder="Room Type (0 for Classroom, 1 for Lab)" required />
-        <input v-model="newClassroom.number" type="text" placeholder="Classroom Number" required />
-        <input v-model="newClassroom.location" type="text" placeholder="Location (Building/Level)" required />
-        <input v-model="newClassroom.capacity" type="number" placeholder="Capacity" required />
-        <input v-model="newClassroom.availableTimeStart" type="number" placeholder="Available Time Start (Hour)" required />
-        <input v-model="newClassroom.availableTimeEnd" type="number" placeholder="Available Time End (Hour)" required />
-        <input v-model="newClassroom.availableDays" type="number" placeholder="Available Days" required />
+      <form v-if="selectedCampusId !== null" @submit.prevent="addClassroom" class="classroom-form">
+        <input v-model="newClassroom.RoomName" type="text" placeholder="Classroom/Lab Name" required />
+        <input v-model="newClassroom.RoomType" type="number" placeholder="Room Type (0 for Classroom, 1 for Lab)" required />
+        <input v-model="newClassroom.RoomAddress" type="text" placeholder="Location (Building/Level)" required />
+        <input v-model="newClassroom.RoomCapacity" type="number" placeholder="Capacity" required />
+        <input v-model="newClassroom.RoomAvailableTimeStart" type="number" placeholder="Available Time Start (Hour)" required />
+        <input v-model="newClassroom.RoomAvailableTimeEnd" type="number" placeholder="Available Time End (Hour)" required />
+        <input v-model="newClassroom.RoomAvailableDays" type="number" placeholder="Available Days" required />
         <button type="submit" class="add-button">Add Classroom</button>
       </form>
 
-      <div class="title" v-if="selectedCampusId">Total Classrooms: <span>{{ filteredClassrooms.length }}</span></div>
-      
-      <table class="classroom-table" v-if="selectedCampusId">
+      <div class="title" v-if="selectedCampusId !== null">Total Classrooms: <span>{{ filteredClassrooms.length }}</span></div>
+
+      <table class="classroom-table" v-if="selectedCampusId !== null && filteredClassrooms.length > 0">
         <thead>
           <tr>
             <th>Classroom/Lab Name</th>
             <th>Room Type</th>
-            <th>Classroom Number</th>
-            <th>Location <br>Building/Level</th>
+            <th>Location <br />Building/Level</th>
             <th>Capacity</th>
             <th>Available Time Start</th>
             <th>Available Time End</th>
             <th>Available Days</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(classroom, index) in filteredClassrooms" :key="index">
-            <td>{{ classroom.name }}</td>
-            <td>{{ classroom.type === 0 ? 'Classroom' : 'Lab' }}</td>
-            <td>{{ classroom.number }}</td>
-            <td>{{ classroom.location }}</td>
-            <td>{{ classroom.capacity }}</td>
-            <td>{{ classroom.availableTimeStart }}</td>
-            <td>{{ classroom.availableTimeEnd }}</td>
-            <td>{{ classroom.availableDays }}</td>
+            <td>{{ classroom.RoomName }}</td>
+            <td>{{ classroom.RoomType === 0 ? 'Classroom' : 'Lab' }}</td>
+            <td>{{ classroom.RoomAddress }}</td>
+            <td>{{ classroom.RoomCapacity }}</td>
+            <td>{{ classroom.RoomAvailableTimeStart }}</td>
+            <td>{{ classroom.RoomAvailableTimeEnd }}</td>
+            <td>{{ classroom.RoomAvailableDays }}</td>
             <td>
               <button @click="deleteClassroom(index)" class="delete-button">Delete</button>
             </td>
@@ -82,93 +80,138 @@ export default {
   data() {
     return {
       campuses: [
-        { id: 1, name: 'Sydney' },
-        { id: 2, name: 'Melbourne' },
-        { id: 3, name: 'Geelong' },
-        { id: 4, name: 'Adelaide' },
+        { id: 0, name: 'Melbourne' },
+        { id: 1, name: 'Geelong' },
+        { id: 2, name: 'Sydney' },
+        { id: 3, name: 'Adelaide' },
       ],
-      selectedCampusId: null,
+      selectedCampusId: 0,
       newClassroom: {
-        name: '',
-        type: '',
-        number: '',
-        location: '',
-        capacity: '',
-        availableTimeStart: '',
-        availableTimeEnd: '',
-        availableDays: '',
+        RoomName: '',
+        RoomType: '',
+        RoomAddress: '',
+        RoomCapacity: '',
+        RoomAvailableTimeStart: '',
+        RoomAvailableTimeEnd: '',
+        RoomAvailableDays: '',
       },
-      classrooms: []
+      classrooms: []  // 确保 classrooms 初始化为一个空数组
     };
   },
   computed: {
     filteredClassrooms() {
-      return this.classrooms.filter(classroom => classroom.campusId === this.selectedCampusId);
+      console.log("过滤教室，选中校区 ID：", this.selectedCampusId);
+      console.log("当前教室数据：", this.classrooms);
+      // 确保 classrooms 是数组，避免调用 filter 时出现错误
+      if (Array.isArray(this.classrooms)) {
+        return this.classrooms.filter(classroom => classroom.CampusID === this.selectedCampusId);
+      } else {
+        console.warn("classrooms 不是一个数组，设置为空数组");
+        return [];
+      }
     }
   },
   methods: {
     goToPage(page) {
+      console.log("跳转到页面：", page);
       this.$router.push(page);
     },
     logout() {
+      console.log("用户登出");
       // Handle logout logic
     },
     selectCampus(campusId) {
+      console.log("选中了校区 ID：", campusId);
       this.selectedCampusId = campusId;
-      this.fetchClassrooms();
+      this.fetchClassrooms(); // Trigger data fetch for the selected campus
     },
     async addClassroom() {
       try {
-        const response = await axios.post('http://127.0.0.1:5002/api/classrooms', {
+        console.log("添加教室：", this.newClassroom, "校区 ID：", this.selectedCampusId);
+        const response = await axios.post('http://127.0.0.1:5002/classroom-management', {
           ...this.newClassroom,
-          campusId: this.selectedCampusId
+          CampusID: this.selectedCampusId
         });
+        console.log("添加教室请求响应：", response);
         alert(response.data.message);
-        this.fetchClassrooms();
+        this.fetchClassrooms(); // Refresh classrooms after adding
         this.resetForm();
       } catch (error) {
-        console.error('Error adding classroom:', error);
-        alert('Failed to add classroom.');
+        console.error('添加教室时出错:', error);
+        if (error.response) {
+          console.error('服务器返回的错误响应:', error.response.data);
+        } else if (error.request) {
+          console.error('请求已发送，但没有收到响应:', error.request);
+        } else {
+          console.error('设置请求时出错:', error.message);
+        }
+        alert('Failed to add classroom. Please check the console for more details.');
       }
     },
     async deleteClassroom(index) {
       const classroomToDelete = this.filteredClassrooms[index];
+      console.log("删除教室 ID：", classroomToDelete.RoomID);
       try {
-        await axios.delete(`http://127.0.0.1:5002/api/classrooms/${classroomToDelete.id}`);
+        const response = await axios.delete(`http://127.0.0.1:5002/classroom-management/${classroomToDelete.RoomID}`);
+        console.log("删除教室请求响应：", response);
         alert('Classroom deleted successfully!');
-        this.fetchClassrooms();
+        this.fetchClassrooms(); // Refresh classrooms after deleting
       } catch (error) {
-        console.error('Error deleting classroom:', error);
-        alert('Failed to delete classroom.');
+        console.error('删除教室时出错:', error);
+        if (error.response) {
+          console.error('服务器返回的错误响应:', error.response.data);
+        } else if (error.request) {
+          console.error('请求已发送，但没有收到响应:', error.request);
+        } else {
+          console.error('设置请求时出错:', error.message);
+        }
+        alert('Failed to delete classroom. Please check the console for more details.');
       }
     },
     async fetchClassrooms() {
       try {
-        const response = await axios.get('http://127.0.0.1:5002/api/classrooms');
-        this.classrooms = response.data;
+        console.log("请求获取教室信息，选中校区 ID：", this.selectedCampusId);
+        const response = await axios.get('http://127.0.0.1:5002/classroom-management', {
+          params: { campusId: this.selectedCampusId },
+          headers: { 'Accept': 'application/json' } 
+        });
+        console.log("获取到的教室数据：", response.data);
+        // 确保 response.data 是一个数组
+        if (Array.isArray(response.data)) {
+          this.classrooms = response.data;
+        } else {
+          console.warn("获取的教室数据不是数组，重置 classrooms 为空数组");
+          this.classrooms = [];
+        }
       } catch (error) {
-        console.error('Error fetching classrooms:', error);
+        console.error('获取教室信息时出错:', error);
         alert('Failed to load classrooms.');
+        this.classrooms = []; // 如果请求失败，重置 classrooms
       }
     },
     resetForm() {
+      console.log("重置表单");
       this.newClassroom = {
-        name: '',
-        type: '',
-        number: '',
-        location: '',
-        capacity: '',
-        availableTimeStart: '',
-        availableTimeEnd: '',
-        availableDays: '',
+        RoomName: '',
+        RoomType: '',
+        RoomAddress: '',
+        RoomCapacity: '',
+        RoomAvailableTimeStart: '',
+        RoomAvailableTimeEnd: '',
+        RoomAvailableDays: '',
       };
     }
   },
   created() {
+    console.log("Classroom Management 页面创建完成");
     this.fetchClassrooms();
   }
 };
 </script>
+
+
+
+
 
 <style scoped>
 * {
@@ -215,13 +258,6 @@ header button {
 
 header button:hover {
   background-color: #FF8A65;
-}
-
-h1 {
-  margin-top: 30px;
-  text-align: center;
-  color: #333;
-  font-size: 36px;
 }
 
 .campus-selection {
@@ -332,4 +368,5 @@ td button:hover {
   background-color: #FF8A65;
 }
 </style>
+
 

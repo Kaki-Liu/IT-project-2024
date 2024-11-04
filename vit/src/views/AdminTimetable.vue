@@ -22,12 +22,25 @@
             :class="{ active: selectedCampusId === campus.id }"
           >
             {{ campus.name }}
+            <div v-if="selectedCampusId === campus.id && rooms.length" class="room-list">
+              <h4>Rooms</h4>
+              <ul>
+                <li 
+                  v-for="room in rooms" 
+                  :key="room.RoomID"
+                  @click="selectRoom(room)"
+                >
+                  {{ room.RoomName }}
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>
 
-      <div class="week-timetable">
+      <div class="week-timetable" v-if="schedule.length">
         <h3>{{ selectedCampusName }} Timetable</h3>
+        <h4 v-if="selectedRoomAddress">Room Address: {{ selectedRoomAddress }}</h4>
         <table>
           <thead>
             <tr>
@@ -40,35 +53,24 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="time in timeSlots" :key="time">
-              <td>{{ time }}</td>
-              <td>
-                <div v-for="course in filteredCourses('Monday', time)" :key="course.id">
-                  {{ course.name }}
-                </div>
-              </td>
-              <td>
-                <div v-for="course in filteredCourses('Tuesday', time)" :key="course.id">
-                  {{ course.name }}
-                </div>
-              </td>
-              <td>
-                <div v-for="course in filteredCourses('Wednesday', time)" :key="course.id">
-                  {{ course.name }}
-                </div>
-              </td>
-              <td>
-                <div v-for="course in filteredCourses('Thursday', time)" :key="course.id">
-                  {{ course.name }}
-                </div>
-              </td>
-              <td>
-                <div v-for="course in filteredCourses('Friday', time)" :key="course.id">
-                  {{ course.name }}
-                </div>
-              </td>
-            </tr>
-          </tbody>
+  <tr v-for="hour in 7" :key="hour">
+    <td>{{ `${hour + 7}:00-${hour + 8}:00` }}</td>
+    <td v-for="day in [1, 2, 3, 4, 5]" :key="day">
+      <template v-if="!isMerged(hour + 7, day)">
+        <div 
+          v-for="course in getCoursesForTimeAndDay(hour + 7, day)" 
+          :key="course.CourseName" 
+          :rowspan="course.EndTime - course.StartTime" 
+          class="course-cell"
+        >
+          {{ course.CourseName }} ({{ course.StartTime }}:00 - {{ course.EndTime }}:00)
+        </div>
+      </template>
+    </td>
+  </tr>
+</tbody>
+
+
         </table>
       </div>
     </div>
@@ -76,39 +78,22 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       campuses: [
-        { id: 1, name: 'Sydney' },
-        { id: 2, name: 'Melbourne' },
-        { id: 3, name: 'Geelong' },
-        { id: 4, name: 'Adelaide' },
+        { id: 0, name: 'Melbourne' },
+        { id: 1, name: 'Geelong' },
+        { id: 2, name: 'Sydney' },
+        { id: 3, name: 'Adelaide' },
       ],
-      selectedCampusId: 1,
-      courses: {
-        1: [
-          { id: 1, name: 'Math', day: 'Monday', time: '9:00-10:00' },
-          { id: 2, name: 'Physics', day: 'Tuesday', time: '10:00-11:00' },
-        ],
-        2: [
-          { id: 3, name: 'Chemistry', day: 'Wednesday', time: '9:00-10:00' },
-          { id: 4, name: 'Biology', day: 'Thursday', time: '11:00-12:00' },
-        ],
-        3: [
-          { id: 5, name: 'English', day: 'Monday', time: '13:00-14:00' },
-          { id: 6, name: 'History', day: 'Friday', time: '14:00-15:00' },
-        ],
-        4: [
-          { id: 7, name: 'Art', day: 'Tuesday', time: '15:00-16:00' },
-          { id: 8, name: 'Music', day: 'Thursday', time: '16:00-17:00' },
-        ],
-      },
-      timeSlots: [
-        '7:00-8:00', '8:00-9:00', '9:00-10:00', '10:00-11:00', 
-        '11:00-12:00', '12:00-13:00', '13:00-14:00', '14:00-15:00', 
-        '15:00-16:00', '16:00-17:00', '17:00-18:00', '18:00-19:00', '19:00-20:00'
-      ],
+      selectedCampusId: null,
+      selectedRoomAddress: '',
+      rooms: [],
+      schedule: [],
+      timeSlots: Array.from({ length: 13 }, (_, i) => `${i + 7}:00-${i + 8}:00`),
     };
   },
   computed: {
@@ -118,18 +103,61 @@ export default {
     },
   },
   methods: {
+    isMerged(hour, day) {
+      // Logic to check if the cell has already been rendered in a previous hour
+      return this.schedule.some(course => 
+        course.Day === day && 
+        course.StartTime < hour && 
+        course.EndTime > hour
+      );
+    },
+    getCoursesForTimeAndDay(hour, day) {
+      return this.schedule.filter(course => {
+        return course.Day === day && course.StartTime === hour;
+      })},
     goToPage(page) {
       this.$router.push(page);
     },
     logout() {
       // Handle logout logic
     },
-    filteredCourses(day, time) {
-      return this.courses[this.selectedCampusId].filter(course => course.day === day && course.time === time);
-    },
     selectCampus(campusId) {
       this.selectedCampusId = campusId;
+      this.sendCampusIdToServer(campusId);
     },
+    selectRoom(room) {
+      this.selectedRoomAddress = room.RoomAddress;
+      this.sendRoomIdToServer(room.RoomID);
+    },
+    sendCampusIdToServer(campusId) {
+      axios.post('http://127.0.0.1:5002/admin-timetable', {
+        campusId: campusId
+      })
+      .then(response => {
+        console.log('Campus ID sent successfully:', response.data);
+        this.rooms = response.data.rooms;
+      })
+      .catch(error => {
+        console.error('Error sending campus ID:', error);
+      });
+    },
+    sendRoomIdToServer(roomId) {
+      axios.post('http://127.0.0.1:5002/admin-timetable/room', {
+        roomId: roomId
+      })
+      .then(response => {
+        console.log('Room ID sent successfully:', response.data);
+        this.schedule = response.data.schedule;
+      })
+      .catch(error => {
+        console.error('Error sending room ID:', error);
+      });
+    },
+    getCoursesForTimeAndDay(hour, day) {
+      return this.schedule.filter(course => {
+        return course.Day === day && course.StartTime <= hour && course.EndTime > hour;
+      });
+    }
   },
 };
 </script>
@@ -242,6 +270,12 @@ th {
 
 td {
   background-color: white;
+  border-radius: 4px;
+}
+
+.course-cell {
+  background-color: #FFECB3;
+  border: 1px solid #FF7043;
   border-radius: 4px;
 }
 </style>

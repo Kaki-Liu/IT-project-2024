@@ -11,18 +11,18 @@
       </div>
     </header>
 
-    <h1>Course Management</h1>
+    <h1>Course Unit Management</h1>
 
     <div class="campus-selection">
       <h3>Select Campus</h3>
       <ul>
         <li 
-          v-for="campus in campuses" 
-          :key="campus.id"
-          @click="selectCampus(campus.id)"
-          :class="{ active: selectedCampusId === campus.id }"
+          v-for="(name, id) in campuses" 
+          :key="id"
+          @click="selectCampus(id)"
+          :class="{ active: selectedCampusId === id }"
         >
-          {{ campus.name }}
+          {{ name }}
         </li>
       </ul>
     </div>
@@ -39,7 +39,7 @@
       </ul>
     </div>
 
-    <form v-if="selectedCampusId" @submit.prevent="addCourseTask">
+    <form v-if="selectedCampusId !== null" @submit.prevent="addCourseTask">
       <input v-model="newCourseTask.courseTaskType" type="number" placeholder="Course Task Type (1: Lecture, 2: Training, etc.)" required />
       <input v-model="newCourseTask.timePerWeek" type="number" placeholder="Time Per Week (hours)" required />
       <input v-model="newCourseTask.coherenceRequirement" type="text" placeholder="Coherence Requirement (true/false)" required />
@@ -49,9 +49,7 @@
       <button type="submit">Add Course Task</button>
     </form>
 
-    <div class="title" v-if="selectedCampusId">Total: <span>{{ filteredCourseTasks.length }}</span></div>
-
-    <table v-if="selectedCampusId">
+    <table v-if="selectedCampusId !== null">
       <thead>
         <tr>
           <th>Course Task Type</th>
@@ -65,12 +63,12 @@
       </thead>
       <tbody>
         <tr v-for="(courseTask, index) in filteredCourseTasks" :key="index">
-          <td>{{ courseTask.courseTaskType }}</td>
-          <td>{{ courseTask.timePerWeek }}</td>
-          <td>{{ courseTask.coherenceRequirement }}</td>
-          <td>{{ courseTask.teacherId }}</td>
-          <td>{{ courseTask.courseId }}</td>
-          <td>{{ courseTask.roomType }}</td>
+          <td>{{ courseTask.CourseTaskType }}</td>
+          <td>{{ courseTask.TimePerWeek }}</td>
+          <td>{{ courseTask.CoherenceRequirement }}</td>
+          <td>{{ courseTask.TeacherID }}</td>
+          <td>{{ courseTask.CourseID }}</td>
+          <td>{{ courseTask.RoomType }}</td>
           <td>
             <button @click="deleteCourseTask(index)">Delete</button>
           </td>
@@ -81,15 +79,17 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      campuses: [
-        { id: 1, name: 'Sydney' },
-        { id: 2, name: 'Melbourne' },
-        { id: 3, name: 'Geelong' },
-        { id: 4, name: 'Adelaide' },
-      ],
+      campuses: {
+        0: 'Melbourne',
+        1: 'Geelong',
+        2: 'Sydney',
+        3: 'Adelaide'
+      },
       selectedCampusId: null,
       newCourseTask: {
         courseTaskType: '',
@@ -99,12 +99,12 @@ export default {
         courseId: '',
         roomType: ''
       },
-      courseTasks: JSON.parse(localStorage.getItem('courseTasks')) || []
+      courseTasks: []
     };
   },
   computed: {
     filteredCourseTasks() {
-      return this.courseTasks.filter(courseTask => courseTask.campusId === this.selectedCampusId);
+      return Array.isArray(this.courseTasks) ? this.courseTasks.filter(courseTask => courseTask.CampusID == this.selectedCampusId) : [];
     }
   },
   methods: {
@@ -113,6 +113,7 @@ export default {
     },
     selectCampus(campusId) {
       this.selectedCampusId = campusId;
+      this.fetchCourseTasks();
     },
     addCourseTask() {
       if (
@@ -127,21 +128,47 @@ export default {
         return;
       }
 
-      this.courseTasks.push({ ...this.newCourseTask, campusId: this.selectedCampusId });
-      this.saveToLocalStorage();
-      this.resetForm();
+      // 添加campusId到newCourseTask中
+      this.newCourseTask.campusId = this.selectedCampusId;
+
+      axios.post('http://127.0.0.1:5002/course-management', this.newCourseTask, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(response => {
+        console.log(response.data.message);
+        this.fetchCourseTasks();
+        this.resetForm();
+      })
+      .catch(error => {
+        console.error('Failed to add course task:', error.response?.data?.message);
+      });
     },
     deleteCourseTask(index) {
       if (confirm('Confirm to delete')) {
-        const globalIndex = this.courseTasks.findIndex((courseTask, i) => courseTask.campusId === this.selectedCampusId && i === index);
+        const globalIndex = this.courseTasks.findIndex((courseTask, i) => courseTask.CampusID == this.selectedCampusId && i === index);
         if (globalIndex !== -1) {
           this.courseTasks.splice(globalIndex, 1);
         }
         this.saveToLocalStorage();
       }
     },
-    saveToLocalStorage() {
-      localStorage.setItem('courseTasks', JSON.stringify(this.courseTasks));
+    fetchCourseTasks() {
+      axios.get('http://127.0.0.1:5002/course-management', {
+        headers: {
+          'Accept': 'application/json'
+        },
+        params: {
+          campusId: this.selectedCampusId
+        }
+      })
+      .then(response => {
+        this.courseTasks = Array.isArray(response.data) ? response.data : [];
+      })
+      .catch(error => {
+        console.error('Failed to fetch course tasks:', error);
+      });
     },
     resetForm() {
       this.newCourseTask = {
@@ -150,15 +177,24 @@ export default {
         coherenceRequirement: '',
         teacherId: '',
         courseId: '',
-        roomType: ''
+        roomType: '',
+        campusId: null
       };
     },
     logout() {
       // Add your logout logic here
     }
+  },
+  mounted() {
+    this.fetchCourseTasks();
   }
 };
 </script>
+
+<style>
+/* Add necessary styling here */
+</style>
+
 
 <style scoped>
 * {

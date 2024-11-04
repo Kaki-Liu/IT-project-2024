@@ -19,8 +19,7 @@
     <section class="hero">
       <h1>Welcome to the Victorian Institute of Technology</h1>
       <p>Explore our courses, campuses, and who we are.</p>
-      <button class="cta-button">Get Started</button>
-    </section>
+      <button class="cta-button" @click="goToLoginPage">Get Started</button>    </section>
   </div>
 </template>
 
@@ -30,6 +29,9 @@ export default {
     login() {
       this.$router.push('/login');
       // Add login logic here
+    },
+    goToLoginPage() {
+      this.$router.push({ path: '/login' });
     }
   }
 }
