@@ -1,0 +1,73 @@
+Product Handover Document
+
+
+
+Overview
+This document outlines the current status and future development plan for our classroom and course management system, which is built using Vue 3 for the front end and Flask for the back end. The system currently supports various management features for administrators, with plans to expand functionality for student users and additional management features.
+
+Current System Status
+
+Completed Components:
+
+AdminPage.vue: Main dashboard for administrators.
+
+AdminTimetable.vue: Allows viewing of timetables but currently lacks the drag-and-drop feature for modifying class times.
+
+ClassroomManagement.vue: Manages classroom data, including adding, deleting, and updating information.
+
+CourseManagement.vue: Handles course information management.
+
+GenerateTimetable.vue: Generates timetables based on input data and pre-built scheduling algorithms.
+
+HomePage.vue: Serves as the landing page for the system.
+
+LoginPage.vue: Basic login interface without functional backend logic.
+
+StudentInfo.vue: Displays student information but is planned for removal.
+
+StudentTimetable.vue: Displays student-specific timetables (currently in development).
+
+Current Backend and Database Status
+
+The backend is built using Flask, which facilitates interaction with the database and supports API integration.
+
+CourseSel table has been created in the SQL database to store student course selection information.
+
+Teacher table exists in the database to store teacher information, but a corresponding front-end management interface is missing.
+
+Planned Features
+
+Student Course Selection Management:
+
+Add a front-end interface for uploading and managing student course selection data.
+
+Develop functionality to parse and insert student course selection data from CSV files into the CourseSel table.
+
+Teacher Information Management Page:
+
+Create a management page to handle teacher data, utilizing the already established Teacher table in the database.
+
+User Authentication Features:
+
+Implement comprehensive login, logout, and registration functionalities.
+
+Develop a database structure to manage user accounts and passwords.
+
+Enhanced Admin Timetable Features:
+
+Introduce drag-and-drop functionality in AdminTimetable.vue to enable administrators to change class times interactively.
+
+Student User Access:
+
+Expand the current user interface to allow student logins.
+
+Enable students to view their personalized timetables, leveraging the existing timetable generation algorithm.
+
+Future Development Plans
+
+API Expansion: Continue developing new APIs with Flask to support the added functionalities.
+
+Front-End Enhancements: Utilize Vue 3 and Axios to improve user experience and maintain seamless communication between the front end and back end.
+
+Conclusion
+The system is well-positioned to support additional features that enhance both administrative and student experiences. Future work will focus on building out the student course selection management, teacher information management, user authentication, and enhancing current timetable functionalities.
